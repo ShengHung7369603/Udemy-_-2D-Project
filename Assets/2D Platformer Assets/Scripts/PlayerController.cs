@@ -4,21 +4,36 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance;
+
+    //角色移動
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     private Rigidbody2D playerRb;
     private float horizontalInput;
 
+    //跳躍
     private bool isGrounded;
     public Transform groundCheckPoint;
     public LayerMask whatIsGround;
-
     private bool canDoubleJump;
 
     //控制角色動畫
     private Animator playerAnim;
     private SpriteRenderer playerSpRenderer;
 
+    //受傷後退
+    [SerializeField]private float KnockBackLength, KnockBackForce;
+    private float KnockBackCounter;
+    private bool isKnockedBack = false;
+
+    //踩敵人反彈
+    public float bounceForce;
+
+    private void Awake()
+    {
+        instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -30,30 +45,38 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Moving();
-
-        // 檢查是否重疊(以groundCheckPoint的位置畫一個小圓，檢查是否與whatIsGround內指定的圖層物件重疊)
-        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, whatIsGround);
-
-        if (isGrounded)
+        if (!isKnockedBack)
         {
-            canDoubleJump = true;
+            Moving();
+
+            // 檢查是否重疊(以groundCheckPoint的位置畫一個小圓，檢查是否與whatIsGround內指定的圖層物件重疊)
+            isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, whatIsGround);
+
+            if (isGrounded)
+            {
+                canDoubleJump = true;
+            }
+
+            //Jump
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            {
+                Jumping();
+
+                AudioManager.instance.PlaySFX(10);
+            }
+            else if (Input.GetKeyDown(KeyCode.Space) && canDoubleJump && !isGrounded)
+            {
+                Jumping();
+                canDoubleJump = false;
+
+                AudioManager.instance.PlaySFX(10);
+            }
+
+            SetAnimatorParameters();
+            //角色面向方向調整
+            FlipXAxis();
         }
         
-        //Jump
-        if (Input.GetKeyDown(KeyCode.Space)&& isGrounded)
-        {
-            Jumping();    
-        }
-        else if(Input.GetKeyDown(KeyCode.Space) && canDoubleJump && !isGrounded)
-        {
-            Jumping();
-            canDoubleJump = false;
-        }
-        
-        SetAnimatorParameters();
-        //角色面向方向調整
-        FlipXAxis();
     }
 
     void Moving()
@@ -80,6 +103,8 @@ public class PlayerController : MonoBehaviour
 
     }
 
+
+    //調整面向方向
     void FlipXAxis()
     {
         if (playerRb.velocity.x < 0.0f)
@@ -92,4 +117,33 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public IEnumerator KnockBack()
+    {
+        isKnockedBack = true;
+        playerRb.velocity = new Vector2(0f, 0f);
+        //設定後退時間
+        KnockBackCounter = KnockBackLength;
+
+        //施加後退位移，並調整後退方向
+        if (playerSpRenderer.flipX)
+        {
+            playerRb.velocity = new Vector2(KnockBackForce, 0);
+        }
+        else
+        {
+            playerRb.velocity = new Vector2(-KnockBackForce, 0);
+        }
+        
+        
+        
+        yield return new WaitForSeconds(KnockBackCounter);
+        //歸零後退計時
+        KnockBackCounter = 0; 
+        isKnockedBack = false;
+    }
+
+    public void TrampleBounceUp()
+    {
+        playerRb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
+    }
 }

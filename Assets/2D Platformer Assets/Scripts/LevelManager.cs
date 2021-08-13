@@ -20,8 +20,14 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator RespawnCountDown()
     {
+        //角色死亡
         PlayerHealthController.instance.gameObject.SetActive(false);
+        //黑畫面
+        UIController.instance.ShouldFadeToBlack();
         yield return new WaitForSeconds(respawnCounter);
+
+        //黑畫面回復
+        UIController.instance.ShouldFadeFromBlack();
 
         PlayerHealthController.instance.gameObject.transform.position = CheckPointController.instance.spawnPos;
         PlayerHealthController.instance.gameObject.SetActive(true);

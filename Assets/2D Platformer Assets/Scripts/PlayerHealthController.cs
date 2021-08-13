@@ -80,8 +80,9 @@ public class PlayerHealthController : MonoBehaviour
             currentHealth = 0;
             UIController.instance.UpdateHeartDisplay();
             LevelManager.instance.RespawnPlayer();
-
+            //­µ®Ä
             AudioManager.instance.PlaySFX(8);
+           
         }
     }
 

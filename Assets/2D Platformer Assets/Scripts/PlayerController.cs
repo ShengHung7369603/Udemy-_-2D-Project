@@ -45,38 +45,40 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isKnockedBack)
+        if (!UIController.instance.isPause)
         {
-            Moving();
-
-            // 檢查是否重疊(以groundCheckPoint的位置畫一個小圓，檢查是否與whatIsGround內指定的圖層物件重疊)
-            isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, whatIsGround);
-
-            if (isGrounded)
+            if (!isKnockedBack)
             {
-                canDoubleJump = true;
+                Moving();
+
+                // 檢查是否重疊(以groundCheckPoint的位置畫一個小圓，檢查是否與whatIsGround內指定的圖層物件重疊)
+                isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, whatIsGround);
+
+                if (isGrounded)
+                {
+                    canDoubleJump = true;
+                }
+
+                //Jump
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+                {
+                    Jumping();
+
+                    AudioManager.instance.PlaySFX(10);
+                }
+                else if (Input.GetKeyDown(KeyCode.Space) && canDoubleJump && !isGrounded)
+                {
+                    Jumping();
+                    canDoubleJump = false;
+
+                    AudioManager.instance.PlaySFX(10);
+                }
+
+                SetAnimatorParameters();
+                //角色面向方向調整
+                FlipXAxis();
             }
-
-            //Jump
-            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-            {
-                Jumping();
-
-                AudioManager.instance.PlaySFX(10);
-            }
-            else if (Input.GetKeyDown(KeyCode.Space) && canDoubleJump && !isGrounded)
-            {
-                Jumping();
-                canDoubleJump = false;
-
-                AudioManager.instance.PlaySFX(10);
-            }
-
-            SetAnimatorParameters();
-            //角色面向方向調整
-            FlipXAxis();
         }
-        
     }
 
     void Moving()

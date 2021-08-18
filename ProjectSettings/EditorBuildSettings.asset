@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/2D Platformer Assets/Scene/Main Menu.unity
     guid: e3409b3443267f241934a61879949176
   - enabled: 1
-    path: Assets/2D Platformer Assets/Scene/Tiling Test.unity
+    path: Assets/2D Platformer Assets/Scene/Level 1 test.unity
     guid: 7f93ddaca807d984bbedca97a04f63b1
   m_configObjects: {}

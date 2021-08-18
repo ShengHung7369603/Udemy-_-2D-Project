@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float minHeight, maxHeight;
     
     private float lastPosX, lastPosY;
+
+    private bool stopFollow = false;
     
     // Start is called before the first frame update
     void Start()
@@ -23,11 +25,19 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //設定畫面範圍
-        float clampedY = Mathf.Clamp(player.transform.position.y, minHeight, maxHeight);
-        transform.position = new Vector3(player.transform.position.x, clampedY , transform.position.z);
+        if (PlayerController.instance.isComplete)
+        {
+            stopFollow = true;
+        }
+        if (!stopFollow)
+        {
+            //設定畫面範圍
+            float clampedY = Mathf.Clamp(player.transform.position.y, minHeight, maxHeight);
+            transform.position = new Vector3(player.transform.position.x, clampedY, transform.position.z);
 
-        BackGroundMoving();
+            BackGroundMoving();
+        }
+        
     }
 
     void BackGroundMoving()

@@ -12,7 +12,7 @@ public class UIController : MonoBehaviour
 
     //暫停
     public bool isPause = false;
-    private GameObject pauseScene;
+    [SerializeField]private GameObject pauseScene;
 
     //死亡後黑畫面
     [SerializeField]private Image fadeScreen;
@@ -23,9 +23,14 @@ public class UIController : MonoBehaviour
     public int gemAmount;
     public Text GemCollectedTxt;
 
+    //通關特效
+    public Text levelEndText;
+
     private void Awake()
     {
         instance = this;
+
+        fadeScreen.gameObject.SetActive(true);
         
     }
 

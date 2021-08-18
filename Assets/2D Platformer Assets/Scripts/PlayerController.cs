@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
     //踩敵人反彈
     public float bounceForce;
 
+    //遊戲通關
+    public bool isComplete = false;
+
     private void Awake()
     {
         instance = this;
@@ -45,14 +48,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!UIController.instance.isPause)
+        // 檢查是否重疊(以groundCheckPoint的位置畫一個小圓，檢查是否與whatIsGround內指定的圖層物件重疊)
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, whatIsGround);
+
+        if (!UIController.instance.isPause && !isComplete)
         {
             if (!isKnockedBack)
             {
                 Moving();
-
-                // 檢查是否重疊(以groundCheckPoint的位置畫一個小圓，檢查是否與whatIsGround內指定的圖層物件重疊)
-                isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, whatIsGround);
 
                 if (isGrounded)
                 {
@@ -79,6 +82,9 @@ public class PlayerController : MonoBehaviour
                 FlipXAxis();
             }
         }
+
+        //再呼叫這個METHOD一次是要讓通關停止控制後動畫能繼續跑
+        SetAnimatorParameters();
     }
 
     void Moving()
